@@ -1,0 +1,176 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": "notify",
+  "default_agent": "plan",
+  "instructions": [
+    "AGENTS.md",
+    "instructions/INSTRUCTIONS.md",
+  ],
+  "permission": {
+    "mcp_*": "ask"
+  },
+  "agent": {
+    "build": {
+      "description": "Primary coding agent for development work",
+      "mode": "primary",
+      "model": "openai/gpt-5.5",
+      "permission": {
+        "edit": "allow",
+        "write": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "todowrite": "allow",
+      }
+    },
+    "planner": {
+      "description": "Expert planning specialist for complex features and refactoring. Use for implementation planning, architectural changes, or complex refactoring.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.5",
+      "prompt": "{file:prompts/planner.txt}",
+      "permission": {
+        "edit": "deny",
+        "write": "deny",
+        "bash": "allow",
+        "read": "allow",
+      }
+    },
+    "architect": {
+      "description": "Software architecture specialist for system design, scalability, and technical decision-making.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.5",
+      "prompt": "{file:prompts/architect.txt}",
+      "permission": {
+        "edit": "deny",
+        "write": "deny",
+        "bash": "allow",
+        "read": "allow",
+      }
+    },
+    "code-reviewer": {
+      "description": "Expert code review specialist. Reviews code for quality, security, and maintainability. Use immediately after writing or modifying code.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.5",
+      "prompt": "{file:prompts/code-reviewer.txt}",
+      "permission": {
+        "edit": "deny",
+        "write": "deny",
+        "bash": "allow",
+        "read": "allow",
+      }
+    },
+    "security-reviewer": {
+      "description": "Security vulnerability detection and remediation specialist. Use after writing code that handles user input, authentication, API endpoints, or sensitive data.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.5",
+      "prompt": "{file:prompts/security-reviewer.txt}",
+      "permission": {
+        "edit": "allow",
+        "write": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "webfetch": "allow"
+      }
+    },
+    "build-error-resolver": {
+      "description": "Build and TypeScript error resolution specialist. Use when build fails or type errors occur. Fixes build/type errors only with minimal diffs.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.5",
+      "prompt": "{file:prompts/build-error-resolver.txt}",
+      "permission": {
+        "edit": "allow",
+        "write": "allow",
+        "bash": "allow",
+        "read": "allow"
+      }
+    },
+    "refactor-cleaner": {
+      "description": "Dead code cleanup and consolidation specialist. Use for removing unused code, duplicates, and refactoring.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.5",
+      "prompt": "{file:prompts/refactor-cleaner.txt}",
+      "permission": {
+        "edit": "allow",
+        "write": "allow",
+        "bash": "allow",
+        "read": "allow"
+      }
+    },
+    "database-reviewer": {
+      "description": "PostgreSQL database specialist for query optimization, schema design, security, and performance. Incorporates Supabase best practices.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.5",
+      "prompt": "{file:prompts/database-reviewer.txt}",
+      "permission": {
+        "edit": "allow",
+        "write": "allow",
+        "bash": "allow",
+        "read": "allow"
+      }
+    },
+  },
+  "command": {
+    "plan": {
+      "description": "Create a detailed implementation plan for complex features",
+      "template": "{file:commands/plan.md}\n\n$ARGUMENTS",
+      "agent": "planner",
+      "subtask": true
+    },
+    "code-review": {
+      "description": "Review code for quality, security, and maintainability",
+      "template": "{file:commands/code-review.md}\n\n$ARGUMENTS",
+      "agent": "code-reviewer",
+      "subtask": true
+    },
+    "security": {
+      "description": "Run comprehensive security review",
+      "template": "{file:commands/security.md}\n\n$ARGUMENTS",
+      "agent": "security-reviewer",
+      "subtask": true
+    },
+    "build-fix": {
+      "description": "Fix build and TypeScript errors with minimal changes",
+      "template": "{file:commands/build-fix.md}\n\n$ARGUMENTS",
+      "agent": "build-error-resolver",
+      "subtask": true
+    },
+    "refactor-clean": {
+      "description": "Remove dead code and consolidate duplicates",
+      "template": "{file:commands/refactor-clean.md}\n\n$ARGUMENTS",
+      "agent": "refactor-cleaner",
+      "subtask": true
+    },
+    "orchestrate": {
+      "description": "Orchestrate multiple agents for complex tasks",
+      "template": "{file:commands/orchestrate.md}\n\n$ARGUMENTS",
+      "agent": "planner",
+      "subtask": true
+    },
+  },
+  "mcp": {
+    "shadcn": {
+      "type": "local",
+      "command": [
+        "bun",
+        "x",
+        "shadcn@latest",
+        "mcp"
+      ],
+      "enabled": true
+    },
+    "better-auth": {
+      "type": "remote",
+      "url": "https://mcp.better-auth.com/mcp",
+      "enabled": true
+    },
+    "prisma": {
+      "type": "local",
+      "command": [
+        "bun",
+        "x",
+        "prisma",
+        "mcp"
+      ],
+      "enabled": true
+    },
+  },
+}

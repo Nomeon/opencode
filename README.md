@@ -96,10 +96,8 @@ Installed local skills:
 | --- | --- |
 | `find-skills` | Discover and install external agent skills. |
 | `grill-me` | Stress-test plans by asking one decision-driving question at a time. |
-| `impeccable` | Frontend design, UX critique, visual polish, accessibility, and live UI iteration. |
-| `motion-foundations` | Core React and Next.js motion rules, tokens, springs, accessibility, and SSR safety. |
-| `motion-patterns` | Production UI animation patterns built on `motion-foundations`. |
-| `motion-advanced` | Advanced motion patterns such as drag, gestures, SVG drawing, text animation, and loaders. |
+| `frontend-design` | Frontend design, UX critique, visual polish, and accessibility. |
+| `simplify` | Simplify code, reduce redundancy, mitigate overengineering. |
 | `playwright-cli` | Browser automation and Playwright-driven page interaction. |
 | `vercel-react-best-practices` | React and Next.js performance guidance from Vercel Engineering. |
 

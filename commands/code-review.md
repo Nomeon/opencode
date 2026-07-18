@@ -3,7 +3,6 @@ description: Review code for quality, security, and maintainability
 agent: code-reviewer
 subtask: true
 ---
-
 # Code Review Command
 
 Review code changes for quality, security, and maintainability: $ARGUMENTS
@@ -18,6 +17,7 @@ Review code changes for quality, security, and maintainability: $ARGUMENTS
 ## Check Categories
 
 ### Security Issues (CRITICAL)
+
 - [ ] Hardcoded credentials, API keys, tokens
 - [ ] SQL injection vulnerabilities
 - [ ] XSS vulnerabilities
@@ -27,6 +27,7 @@ Review code changes for quality, security, and maintainability: $ARGUMENTS
 - [ ] Authentication/authorization flaws
 
 ### Code Quality (HIGH)
+
 - [ ] Functions > 50 lines
 - [ ] Files > 800 lines
 - [ ] Nesting depth > 4 levels
@@ -36,13 +37,14 @@ Review code changes for quality, security, and maintainability: $ARGUMENTS
 - [ ] Missing JSDoc for public APIs
 
 ### Best Practices (MEDIUM)
+
 - [ ] Mutation patterns (use immutable instead)
 - [ ] Unnecessary complexity
-- [ ] Missing tests for new code
 - [ ] Accessibility issues (a11y)
 - [ ] Performance concerns
 
 ### Style (LOW)
+
 - [ ] Inconsistent naming
 - [ ] Missing type annotations
 - [ ] Formatting issues

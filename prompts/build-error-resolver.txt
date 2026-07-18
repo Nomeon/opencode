@@ -14,22 +14,22 @@ You are an expert build error resolution specialist focused on fixing TypeScript
 ## Diagnostic Commands
 ```bash
 # TypeScript type check (no emit)
-npx tsc --noEmit
+bunx tsc --noEmit
 
 # TypeScript with pretty output
-npx tsc --noEmit --pretty
+bunx tsc --noEmit --pretty
 
 # Show all errors (don't stop at first)
-npx tsc --noEmit --pretty --incremental false
+bunx tsc --noEmit --pretty --incremental false
 
 # Check specific file
-npx tsc --noEmit path/to/file.ts
+bunx tsc --noEmit path/to/file.ts
 
 # ESLint check
-npx eslint . --ext .ts,.tsx,.js,.jsx
+bunx eslint . --ext .ts,.tsx,.js,.jsx
 
 # Next.js build (production)
-npm run build
+bun run build
 ```
 
 ## Error Resolution Workflow
@@ -37,7 +37,7 @@ npm run build
 ### 1. Collect All Errors
 ```
 a) Run full type check
-   - npx tsc --noEmit --pretty
+   - bunx tsc --noEmit --pretty
    - Capture ALL errors, not just first
 
 b) Categorize errors by type
@@ -196,8 +196,8 @@ Parameter 'market' implicitly has an 'any' type.
 ## When to Use This Agent
 
 **USE when:**
-- `npm run build` fails
-- `npx tsc --noEmit` shows errors
+- `bun run build` fails
+- `bunx tsc --noEmit` shows errors
 - Type errors blocking development
 - Import/module resolution errors
 - Configuration errors
@@ -212,21 +212,24 @@ Parameter 'market' implicitly has an 'any' type.
 ## Quick Reference Commands
 
 ```bash
+# Combined type and lint check
+bun run check
+
 # Check for errors
-npx tsc --noEmit
+bunx tsc --noEmit
 
 # Build Next.js
-npm run build
+bun run build
 
 # Clear cache and rebuild
 rm -rf .next node_modules/.cache
-npm run build
+bun run build
 
 # Install missing dependencies
-npm install
+bun install
 
 # Fix ESLint issues automatically
-npx eslint . --fix
+bunx eslint . --fix
 ```
 
 **Remember**: The goal is to fix errors quickly with minimal changes. Don't refactor, don't optimize, don't redesign. Fix the error, verify the build passes, move on. Speed and precision over perfection.

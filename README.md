@@ -56,16 +56,18 @@ The instruction layer is split across two files.
 
 Agents are configured in `opencode.jsonc`. Most custom agents are subagents backed by prompt files in `prompts/`.
 
-| Agent | Mode | Prompt | Purpose |
-| --- | --- | --- | --- |
-| `build` | primary | inline config | Main coding agent for development work. |
-| `planner` | subagent | `prompts/planner.txt` | Implementation planning for complex features and refactors. |
-| `architect` | subagent | `prompts/architect.txt` | System design, scalability, and technical decisions. |
-| `code-reviewer` | subagent | `prompts/code-reviewer.txt` | Code quality, maintainability, and security review. |
-| `security-reviewer` | subagent | `prompts/security-reviewer.txt` | Security vulnerability review and remediation guidance. |
-| `build-error-resolver` | subagent | `prompts/build-error-resolver.txt` | Minimal build and TypeScript error fixes. |
-| `refactor-cleaner` | subagent | `prompts/refactor-cleaner.txt` | Dead code cleanup and duplicate consolidation. |
-| `database-reviewer` | subagent | `prompts/database-reviewer.txt` | PostgreSQL and Supabase schema, query, security, and performance review. |
+| Agent                    | Mode   | Prompt                             | Purpose                                                                  |
+| ------------------------ | ------ | ---------------------------------- | ------------------------------------------------------------------------ |
+| `build`                | primary  | inline config                      | Main coding agent for development work.                                  |
+| `planner`              | subagent | `prompts/planner.txt`              | Implementation planning for complex features and refactors.              |
+| `architect`            | subagent | `prompts/architect.txt`            | System design, scalability, and technical decisions.                     |
+| `code-reviewer`        | subagent | `prompts/code-reviewer.txt`        | Code quality, maintainability, and security review.                      |
+| `security-reviewer`    | subagent | `prompts/security-reviewer.txt`    | Security vulnerability review and remediation guidance.                  |
+| `build-error-resolver` | subagent | `prompts/build-error-resolver.txt` | Minimal build and TypeScript error fixes.                                |
+| `refactor-cleaner`     | subagent | `prompts/refactor-cleaner.txt`     | Dead code cleanup and duplicate consolidation.                           |
+| `database-reviewer`    | subagent | `prompts/database-reviewer.txt`    | PostgreSQL and Supabase schema, query, security, and performance review. |
+| `skeptic`              | subagent | `prompts/skeptic.txt`              | Simplifying and optmizing following YAGNI and KISS principles.           |
+
 
 Most review and planning agents are read-only. Agents that are expected to fix issues, such as `build-error-resolver`, `refactor-cleaner`, `security-reviewer`, and `database-reviewer`, have edit/write permissions enabled.
 
@@ -75,14 +77,13 @@ Most review and planning agents are read-only. Agents that are expected to fix i
 
 Configured commands:
 
-| Command | Agent | Purpose |
-| --- | --- | --- |
-| `/plan` | `planner` | Produce an implementation plan and wait for confirmation. |
-| `/code-review` | `code-reviewer` | Review changed code for quality, security, and maintainability. |
-| `/security` | `security-reviewer` | Run an OWASP-oriented security review. |
-| `/build-fix` | `build-error-resolver` | Fix build and TypeScript errors with minimal diffs. |
-| `/refactor-clean` | `refactor-cleaner` | Remove dead code and consolidate duplicates safely. |
-| `/orchestrate` | `planner` | Plan multi-agent execution for complex work. |
+| Command             | Agent                    | Purpose                                                         |
+| ------------------- | ------------------------ | --------------------------------------------------------------- |
+| `/plan`           | `planner`              | Produce an implementation plan and wait for confirmation.       |
+| `/code-review`    | `code-reviewer`        | Review changed code for quality, security, and maintainability. |
+| `/security`       | `security-reviewer`    | Run an OWASP-oriented security review.                          |
+| `/build-fix`      | `build-error-resolver` | Fix build and TypeScript errors with minimal diffs.             |
+| `/refactor-clean` | `refactor-cleaner`     | Remove dead code and consolidate duplicates safely.             |
 
 Each command template accepts `$ARGUMENTS`, then runs as a subtask with the configured agent.
 
@@ -92,14 +93,14 @@ Each command template accepts `$ARGUMENTS`, then runs as a subtask with the conf
 
 Installed local skills:
 
-| Skill | Use Case |
-| --- | --- |
-| `find-skills` | Discover and install external agent skills. |
-| `grill-me` | Stress-test plans by asking one decision-driving question at a time. |
-| `frontend-design` | Frontend design, UX critique, visual polish, and accessibility. |
-| `simplify` | Simplify code, reduce redundancy, mitigate overengineering. |
-| `playwright-cli` | Browser automation and Playwright-driven page interaction. |
-| `vercel-react-best-practices` | React and Next.js performance guidance from Vercel Engineering. |
+| Skill                           | Use Case                                                             |
+| ------------------------------- | -------------------------------------------------------------------- |
+| `find-skills`                 | Discover and install external agent skills.                          |
+| `frontend-design`             | Frontend design, UX critique, visual polish, and accessibility.      |
+| `grill-me`                    | Stress-test plans by asking one decision-driving question at a time. |
+| `playwright-cli`              | Browser automation and Playwright-driven page interaction.           |
+| `simplify`                    | Simplify code, reduce redundancy, mitigate overengineering.          |
+| `vercel-react-best-practices` | React and Next.js performance guidance from Vercel Engineering.      |
 
 Add new workflow knowledge under `skills/` first. Add or update `commands/` only when a slash-command shim is still needed.
 
@@ -107,11 +108,11 @@ Add new workflow knowledge under `skills/` first. Add or update `commands/` only
 
 The config enables three MCP integrations.
 
-| Server | Type | Command or URL | Purpose |
-| --- | --- | --- | --- |
-| `shadcn` | local | `bun x shadcn@latest mcp` | Search, inspect, and add shadcn/ui registry components. |
-| `better-auth` | remote | `https://mcp.better-auth.com/mcp` | Search and read Better Auth documentation. |
-| `prisma` | local | `bun x prisma mcp` | Prisma migration and database tooling. |
+| Server          | Type   | Command or URL                      | Purpose                                                 |
+| --------------- | ------ | ----------------------------------- | ------------------------------------------------------- |
+| `shadcn`      | local  | `bun x shadcn@latest mcp`         | Search, inspect, and add shadcn/ui registry components. |
+| `better-auth` | remote | `https://mcp.better-auth.com/mcp` | Search and read Better Auth documentation.              |
+| `prisma`      | local  | `bun x prisma mcp`                | Prisma migration and database tooling.                  |
 
 MCP tool use is gated by the top-level `mcp_*: ask` permission rule.
 
@@ -119,13 +120,13 @@ MCP tool use is gated by the top-level `mcp_*: ask` permission rule.
 
 Custom tools are implemented in `tools/` and re-exported from `tools/index.ts`.
 
-| Tool | File | Purpose |
-| --- | --- | --- |
-| `changedFiles` | `tools/changed-files.ts` | Show files changed by agents in the current session as a tree or JSON. |
-| `formatCode` | `tools/format-code.ts` | Detect a formatter and return the exact command to run. |
-| `lintCheck` | `tools/lint-check.ts` | Detect a linter and return a lint or fix command. |
-| `securityAudit` | `tools/security-audit.ts` | Scan dependencies, secrets, and common code security issues. |
-| `gitSummary` | `tools/git-summary.ts` | Return branch, status, recent commits, and optional diff stats. |
+| Tool              | File                        | Purpose                                                                |
+| ----------------- | --------------------------- | ---------------------------------------------------------------------- |
+| `changedFiles`  | `tools/changed-files.ts`  | Show files changed by agents in the current session as a tree or JSON. |
+| `formatCode`    | `tools/format-code.ts`    | Detect a formatter and return the exact command to run.                |
+| `gitSummary`    | `tools/git-summary.ts`    | Return branch, status, recent commits, and optional diff stats.        |
+| `lintCheck`     | `tools/lint-check.ts`     | Detect a linter and return a lint or fix command.                      |
+| `securityAudit` | `tools/security-audit.ts` | Scan dependencies, secrets, and common code security issues.           |
 
 `plugins/lib/changed-files-store.ts` provides shared in-memory tracking for changed-file reporting.
 
@@ -159,7 +160,7 @@ The local `package.json` only declares `@opencode-ai/plugin`, which provides typ
 Expected local tooling:
 
 - `bun` for the configured local MCP server commands.
-- `npm` or `npx` for formatter, linter, audit, and auxiliary command suggestions.
+- Prefer `bun` if available, else `npm` or `npx` for formatter, linter, audit, and auxiliary command suggestions.
 - Git, because several workflows and tools inspect repository status and diffs.
 
 ## Editing This Setup

@@ -10,7 +10,7 @@ Fix build and TypeScript errors with minimal changes: $ARGUMENTS
 
 ## Your Task
 
-1. **Run type check**: `npx tsc --noEmit` or `bun run check` if available
+1. **Run type check**: `bun run check` (if available, preferred) or `npx tsc --noEmit`
 2. **Collect all errors**
 3. **Fix errors one by one** with minimal changes
 4. **Verify each fix** doesn't introduce new errors
@@ -24,7 +24,7 @@ Fix build and TypeScript errors with minimal changes: $ARGUMENTS
 - PASS: Fix syntax errors
 - PASS: Make minimal changes
 - PASS: Preserve existing behavior
-- PASS: Run `tsc --noEmit` after each change
+- PASS: Run `bun run check` or `tsc --noEmit` after each change
 
 ### DON'T:
 - FAIL: Refactor code
@@ -47,9 +47,8 @@ Fix build and TypeScript errors with minimal changes: $ARGUMENTS
 ## Verification Steps
 
 After fixes:
-1. `npx tsc --noEmit` or `bun run check` - should show 0 errors
-2. `npm run build` - should succeed
-3. `npm test` - tests should still pass
+1. `bun run check` or `npx tsc --noEmit` - should show 0 errors
+2. `bun run build` - should succeed
 
 ---
 

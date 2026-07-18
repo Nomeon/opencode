@@ -3,7 +3,6 @@ description: Remove dead code and consolidate duplicates
 agent: refactor-cleaner
 subtask: true
 ---
-
 # Refactor Clean Command
 
 Analyze and clean up the codebase: $ARGUMENTS
@@ -21,13 +20,13 @@ Analyze and clean up the codebase: $ARGUMENTS
 
 ```bash
 # Find unused exports
-npx knip
+bunx knip
 
 # Find unused dependencies
-npx depcheck
+bunx depcheck
 
 # Find unused TypeScript exports
-npx ts-prune
+bunx ts-prune
 ```
 
 ### Manual Checks
@@ -75,9 +74,9 @@ npx ts-prune
 
 After cleanup:
 
-1. `npm run build` - builds successfully
-2. `npm test` - all tests pass
-3. `npm run lint` - no new lint errors
+1. `bun run build` - builds successfully
+2. `bun run test` - all tests pass
+3. `bun run check` - no new errors
 4. Manual smoke test - features work
 
 ## Report Format

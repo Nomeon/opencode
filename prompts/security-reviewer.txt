@@ -14,7 +14,7 @@ You are an expert security specialist focused on identifying and remediating vul
 ## Tools at Your Disposal
 
 ### Security Analysis Tools
-- **npm audit** - Check for vulnerable dependencies
+- **bun audit** - Check for vulnerable dependencies
 - **eslint-plugin-security** - Static analysis for security issues
 - **git-secrets** - Prevent committing secrets
 - **trufflehog** - Find secrets in git history
@@ -23,10 +23,10 @@ You are an expert security specialist focused on identifying and remediating vul
 ### Analysis Commands
 ```bash
 # Check for vulnerable dependencies
-npm audit
+bun audit
 
 # High severity only
-npm audit --audit-level=high
+bun audit --audit-level=high
 
 # Check for secrets in files
 grep -r "api[_-]?key\|password\|secret\|token" --include="*.js" --include="*.ts" --include="*.json" .

@@ -4,7 +4,7 @@
   "default_agent": "plan",
   "instructions": [
     "AGENTS.md",
-    "instructions/INSTRUCTIONS.md",
+    "instructions/INSTRUCTIONS.md"
   ],
   "permission": {
     "mcp_*": "ask"
@@ -13,7 +13,7 @@
     "build": {
       "description": "Primary coding agent for development work",
       "mode": "primary",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.6-terra",
       "permission": {
         "edit": "allow",
         "write": "allow",
@@ -25,43 +25,43 @@
     "planner": {
       "description": "Expert planning specialist for complex features and refactoring. Use for implementation planning, architectural changes, or complex refactoring.",
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.6-terra",
       "prompt": "{file:prompts/planner.txt}",
       "permission": {
         "edit": "deny",
         "write": "deny",
         "bash": "allow",
-        "read": "allow",
+        "read": "allow"
       }
     },
     "architect": {
       "description": "Software architecture specialist for system design, scalability, and technical decision-making.",
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.6-sol",
       "prompt": "{file:prompts/architect.txt}",
       "permission": {
         "edit": "deny",
         "write": "deny",
         "bash": "allow",
-        "read": "allow",
+        "read": "allow"
       }
     },
     "code-reviewer": {
       "description": "Expert code review specialist. Reviews code for quality, security, and maintainability. Use immediately after writing or modifying code.",
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.6-sol",
       "prompt": "{file:prompts/code-reviewer.txt}",
       "permission": {
         "edit": "deny",
         "write": "deny",
         "bash": "allow",
-        "read": "allow",
+        "read": "allow"
       }
     },
     "security-reviewer": {
       "description": "Security vulnerability detection and remediation specialist. Use after writing code that handles user input, authentication, API endpoints, or sensitive data.",
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.6-sol",
       "prompt": "{file:prompts/security-reviewer.txt}",
       "permission": {
         "edit": "allow",
@@ -74,7 +74,7 @@
     "build-error-resolver": {
       "description": "Build and TypeScript error resolution specialist. Use when build fails or type errors occur. Fixes build/type errors only with minimal diffs.",
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.6-terra",
       "prompt": "{file:prompts/build-error-resolver.txt}",
       "permission": {
         "edit": "allow",
@@ -86,7 +86,7 @@
     "refactor-cleaner": {
       "description": "Dead code cleanup and consolidation specialist. Use for removing unused code, duplicates, and refactoring.",
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.6-terra",
       "prompt": "{file:prompts/refactor-cleaner.txt}",
       "permission": {
         "edit": "allow",
@@ -98,7 +98,7 @@
     "database-reviewer": {
       "description": "PostgreSQL database specialist for query optimization, schema design, security, and performance. Incorporates Supabase best practices.",
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.6-sol",
       "prompt": "{file:prompts/database-reviewer.txt}",
       "permission": {
         "edit": "allow",
@@ -107,6 +107,18 @@
         "read": "allow"
       }
     },
+    "skeptic": {
+      "description": "Simplify implementations using KISS and YAGNI. Eliminate unnecessary abstractions and premature optimization. Prefer existing code and the smallest reasonable solution.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-sol",
+      "prompt": "{file:prompts/skeptic.txt}",
+      "permission": {
+        "edit": "allow",
+        "write": "allow",
+        "bash": "allow",
+        "read": "allow"
+      }
+    }
   },
   "command": {
     "plan": {
@@ -139,12 +151,12 @@
       "agent": "refactor-cleaner",
       "subtask": true
     },
-    "orchestrate": {
-      "description": "Orchestrate multiple agents for complex tasks",
-      "template": "{file:commands/orchestrate.md}\n\n$ARGUMENTS",
-      "agent": "planner",
+    "skeptic": {
+      "description": "Simplify code using KISS and YAGNI principles",
+      "template": "{file:commands/skeptic.md}\n\n$ARGUMENTS",
+      "agent": "skeptic",
       "subtask": true
-    },
+    }
   },
   "mcp": {
     "shadcn": {

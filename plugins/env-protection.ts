@@ -9,13 +9,7 @@ type ToolExecuteBeforeOutput = {
   }
 }
 
-const BLOCKED_ENV_FILES = [
-  ".env",
-  ".env.local",
-  ".env.production",
-  ".env.development",
-  ".env.test",
-]
+const READABLE_ENV_SUFFIXES = [".example", ".template", ".sample"]
 
 export const EnvProtection = async () => {
   return {
@@ -27,13 +21,19 @@ export const EnvProtection = async () => {
 
       const filePath = output.args?.filePath
 
-      if (typeof filePath !== "string") return
-
-      const fileName = filePath.split("/").pop()
-
-      if (fileName && BLOCKED_ENV_FILES.includes(fileName)) {
-        throw new Error("Do not read protected .env files")
+      if (typeof filePath === "string" && isProtectedEnvFile(filePath)) {
+        throw new Error("Do not read protected environment files")
       }
     },
   }
+}
+
+function isProtectedEnvFile(filePath: string): boolean {
+  const fileName = filePath.split(/[\\/]/).pop()
+
+  if (!fileName) return false
+  if (fileName === ".env") return true
+  if (!fileName.startsWith(".env.")) return false
+
+  return !READABLE_ENV_SUFFIXES.some((suffix) => fileName.endsWith(suffix))
 }

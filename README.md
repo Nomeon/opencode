@@ -1,174 +1,80 @@
-# Nomeon Opencode Setup
+# Nomeon OpenCode Setup
 
-This repo is mny current global Opencode configuration stored at `~/.config/opencode`. It defines the default model, shared instructions, specialist subagents, commands, skills, MCP servers, custom tools, and plugins used by Opencode.
+Global OpenCode configuration stored at `~/.config/opencode`.
 
-## Directory Layout
+## Behavior
 
-```text
-.
-├── AGENTS.md                    # High-level agent behavior and workflow rules
-├── README.md                    # This setup guide
-├── instructions/
-│   └── INSTRUCTIONS.md          # Additional global coding, security, and workflow rules
-├── opencode.jsonc               # Main Opencode configuration
-├── tui.json                     # TUI theme configuration
-├── commands/                    # Legacy slash command templates
-├── plugins/                     # Local Opencode plugins and plugin support code
-├── prompts/                     # Prompt bodies for configured subagents
-├── skills/                      # Local skills auto-discovered by Opencode
-└── tools/                       # Custom TypeScript tools exported to Opencode
-```
+- Built-in `plan` mode is the default so requirements, scope, and verification are agreed before implementation.
+- Tiny, obvious changes can move directly to `build` when selected explicitly.
+- `AGENTS.md` is the single global instruction file.
+- Implementations should use the fewest concepts and abstractions needed for current requirements.
+- Reviews are risk-based. The working agent always reviews its own diff; specialist agents are used only when their domain is relevant.
+- Verification is targeted to the changed behavior and the checks already supported by each project.
 
-## Main Config
+## Configuration
 
-`opencode.jsonc` is the entry point for the setup.
+`opencode.jsonc` defines:
 
-Key settings:
-
-- `$schema` points to `https://opencode.ai/config.json` for editor validation.
-- `autoupdate` is set to `notify`, so Opencode notifies about updates instead of applying them silently.
-- `default_agent` is set to `plan`.
-- `instructions` loads `AGENTS.md` and `instructions/INSTRUCTIONS.md` into sessions.
-- Top-level MCP tool permissions default to `ask` through the `mcp_*` permission rule.
-- Custom agents, commands, and MCP servers are declared inline.
-
-## Instructions
-
-The instruction layer is split across two files.
-
-`AGENTS.md` contains the primary workflow rules:
-
-- Agent-first delegation for planning, architecture, review, security, build fixes, cleanup, and database work.
-- Security-first development and commit checks.
-- Immutable coding style.
-- Plan-before-execute guidance for complex work.
-- Skills-first workflow policy, with `commands/` kept as compatibility shims.
-
-`instructions/INSTRUCTIONS.md` expands those rules with examples and checklists:
-
-- Mandatory security checks before commits.
-- Secret management patterns.
-- Error handling and input validation examples.
-- Git workflow and conventional commit guidance.
-- Manual formatting, type checking, and security checks needed in Opencode.
+- Update notifications through `autoupdate: "notify"`.
+- Built-in `plan` as the default agent.
+- `build` as the primary coding agent.
+- Specialist subagents for architecture, code review, security, build failures, cleanup, databases, and simplification.
+- MCP tool permissions set to `ask`.
+- Globally enabled shadcn, Better Auth, and Prisma MCP servers.
 
 ## Agents
 
-Agents are configured in `opencode.jsonc`. Most custom agents are subagents backed by prompt files in `prompts/`.
+| Agent                    | Use                                                                |
+| ------------------------ | ------------------------------------------------------------------ |
+| `builder`              | Implementation subagent for focused tasks                          |
+| `architect`            | Material design decisions spanning boundaries or trade-offs        |
+| `code-reviewer`        | Broad, risky, or explicitly requested reviews                      |
+| `security-reviewer`    | Meaningful attack surfaces and security remediation                |
+| `build-error-resolver` | Focused build and type-error fixes                                 |
+| `refactor-cleaner`     | Deliberate dead-code, dependency, and duplication cleanup          |
+| `database-reviewer`    | PostgreSQL and Prisma schema, migration, integrity, and query work |
+| `skeptic`              | Focused KISS and YAGNI simplification                              |
 
-| Agent                    | Mode   | Prompt                             | Purpose                                                                  |
-| ------------------------ | ------ | ---------------------------------- | ------------------------------------------------------------------------ |
-| `build`                | primary  | inline config                      | Main coding agent for development work.                                  |
-| `planner`              | subagent | `prompts/planner.txt`              | Implementation planning for complex features and refactors.              |
-| `architect`            | subagent | `prompts/architect.txt`            | System design, scalability, and technical decisions.                     |
-| `code-reviewer`        | subagent | `prompts/code-reviewer.txt`        | Code quality, maintainability, and security review.                      |
-| `security-reviewer`    | subagent | `prompts/security-reviewer.txt`    | Security vulnerability review and remediation guidance.                  |
-| `build-error-resolver` | subagent | `prompts/build-error-resolver.txt` | Minimal build and TypeScript error fixes.                                |
-| `refactor-cleaner`     | subagent | `prompts/refactor-cleaner.txt`     | Dead code cleanup and duplicate consolidation.                           |
-| `database-reviewer`    | subagent | `prompts/database-reviewer.txt`    | PostgreSQL and Supabase schema, query, security, and performance review. |
-| `skeptic`              | subagent | `prompts/skeptic.txt`              | Simplifying and optmizing following YAGNI and KISS principles.           |
-
-
-Most review and planning agents are read-only. Agents that are expected to fix issues, such as `build-error-resolver`, `refactor-cleaner`, `security-reviewer`, and `database-reviewer`, have edit/write permissions enabled.
+Agent behavior lives in `prompts/`. Specialist use is contextual rather than an automatic post-build pipeline.
 
 ## Commands
 
-`commands/` contains legacy slash-entry shims. The long-term workflow surface is `skills/`, but these commands remain useful for direct invocation and cross-harness compatibility.
+Native Markdown commands live in `commands/`:
 
-Configured commands:
+| Command             | Purpose                                              |
+| ------------------- | ---------------------------------------------------- |
+| `/code-review`    | Review scoped changes for concrete defects           |
+| `/security`       | Review a meaningful attack surface                   |
+| `/build-fix`      | Fix build or type errors minimally                   |
+| `/refactor-clean` | Remove confirmed dead code and harmful duplication   |
+| `/skeptic`        | Simplify an implementation while preserving behavior |
 
-| Command             | Agent                    | Purpose                                                         |
-| ------------------- | ------------------------ | --------------------------------------------------------------- |
-| `/plan`           | `planner`              | Produce an implementation plan and wait for confirmation.       |
-| `/code-review`    | `code-reviewer`        | Review changed code for quality, security, and maintainability. |
-| `/security`       | `security-reviewer`    | Run an OWASP-oriented security review.                          |
-| `/build-fix`      | `build-error-resolver` | Fix build and TypeScript errors with minimal diffs.             |
-| `/refactor-clean` | `refactor-cleaner`     | Remove dead code and consolidate duplicates safely.             |
-
-Each command template accepts `$ARGUMENTS`, then runs as a subtask with the configured agent.
+Planning uses built-in plan mode rather than a duplicate `/plan` command.
 
 ## Skills
 
-`skills/` is the canonical workflow surface. Each skill lives in its own folder with a `SKILL.md` file.
-
-Installed local skills:
-
-| Skill                           | Use Case                                                             |
-| ------------------------------- | -------------------------------------------------------------------- |
-| `find-skills`                 | Discover and install external agent skills.                          |
-| `frontend-design`             | Frontend design, UX critique, visual polish, and accessibility.      |
-| `grill-me`                    | Stress-test plans by asking one decision-driving question at a time. |
-| `playwright-cli`              | Browser automation and Playwright-driven page interaction.           |
-| `simplify`                    | Simplify code, reduce redundancy, mitigate overengineering.          |
-| `vercel-react-best-practices` | React and Next.js performance guidance from Vercel Engineering.      |
-
-Add new workflow knowledge under `skills/` first. Add or update `commands/` only when a slash-command shim is still needed.
+Demand-driven skills are auto-discovered under `skills/`. The installed skills cover skill discovery, frontend design, plan interrogation, Playwright automation, and React or Next.js performance guidance.
 
 ## MCP Servers
 
-The config enables three MCP integrations.
+| Server      | Configuration                       |
+| ----------- | ----------------------------------- |
+| shadcn      | `bun x shadcn@latest mcp`         |
+| Better Auth | `https://mcp.better-auth.com/mcp` |
+| Prisma      | `bun x prisma mcp`                |
 
-| Server          | Type   | Command or URL                      | Purpose                                                 |
-| --------------- | ------ | ----------------------------------- | ------------------------------------------------------- |
-| `shadcn`      | local  | `bun x shadcn@latest mcp`         | Search, inspect, and add shadcn/ui registry components. |
-| `better-auth` | remote | `https://mcp.better-auth.com/mcp` | Search and read Better Auth documentation.              |
-| `prisma`      | local  | `bun x prisma mcp`                | Prisma migration and database tooling.                  |
+All three are enabled globally because they are used by most projects. MCP calls require permission by default.
 
-MCP tool use is gated by the top-level `mcp_*: ask` permission rule.
+## Environment Guard
 
-## Custom Tools
+`plugins/env-protection.ts` blocks direct `read` tool access to `.env` and secret-bearing `.env.*` files. Template files ending in `.example`, `.template`, or `.sample` remain readable, including variants such as `.env.production.example`.
 
-Custom tools are implemented in `tools/` and re-exported from `tools/index.ts`.
+This is a narrow guardrail, not a security boundary. It does not prevent access through Bash, another filesystem-capable tool, or an alternate path such as a symlink. Secrets must still stay out of source control and agent-readable output.
 
-| Tool              | File                        | Purpose                                                                |
-| ----------------- | --------------------------- | ---------------------------------------------------------------------- |
-| `changedFiles`  | `tools/changed-files.ts`  | Show files changed by agents in the current session as a tree or JSON. |
-| `formatCode`    | `tools/format-code.ts`    | Detect a formatter and return the exact command to run.                |
-| `gitSummary`    | `tools/git-summary.ts`    | Return branch, status, recent commits, and optional diff stats.        |
-| `lintCheck`     | `tools/lint-check.ts`     | Detect a linter and return a lint or fix command.                      |
-| `securityAudit` | `tools/security-audit.ts` | Scan dependencies, secrets, and common code security issues.           |
+## Maintenance
 
-`plugins/lib/changed-files-store.ts` provides shared in-memory tracking for changed-file reporting.
-
-## Plugins
-
-`plugins/env-protection.ts` defines `EnvProtection`, a local plugin that intercepts `read` tool calls and blocks reads of protected environment files:
-
-- `.env`
-- `.env.local`
-- `.env.production`
-- `.env.development`
-- `.env.test`
-
-This protects local secrets from being read into agent context by default.
-
-## TUI
-
-`tui.json` configures the Opencode TUI theme:
-
-```json
-{
-  "$schema": "https://opencode.ai/tui.json",
-  "theme": "catppuccin-macchiato"
-}
-```
-
-## Dependencies
-
-The local `package.json` only declares `@opencode-ai/plugin`, which provides types and helpers for plugins and custom tools. Local package artifacts are ignored by this repo through `.gitignore`.
-
-Expected local tooling:
-
-- `bun` for the configured local MCP server commands.
-- Prefer `bun` if available, else `npm` or `npx` for formatter, linter, audit, and auxiliary command suggestions.
-- Git, because several workflows and tools inspect repository status and diffs.
-
-## Editing This Setup
-
-Use these conventions when changing this configuration:
-
-- Keep `opencode.jsonc` schema-valid and preserve the `$schema` field.
-- Put reusable workflow behavior in `skills/` before adding new legacy commands.
-- Put non-trivial agent behavior in prompt files under `prompts/` rather than embedding long strings in `opencode.jsonc`.
-- Keep secrets out of this repository and out of agent-readable files.
-- Restart Opencode after changing config-time files so the running session picks up the changes.
+- Keep global behavior in `AGENTS.md`; avoid a second instruction layer.
+- Keep reusable agent behavior in `prompts/` and slash commands as thin entry points.
+- Add project-specific rules and integrations to the relevant project rather than this global setup.
+- Validate changes with `opencode debug config`, `opencode agent list`, and `opencode debug skill`.
+- Restart OpenCode after changing configuration, prompts, commands, skills, or plugins because active sessions do not reload them.

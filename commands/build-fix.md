@@ -1,55 +1,15 @@
 ---
-description: Fix build and TypeScript errors with minimal changes
+description: Fix build or type errors with the smallest correct change
 agent: build-error-resolver
 subtask: true
 ---
 
-# Build Fix Command
+Reproduce and fix `$ARGUMENTS`. If no error is supplied, run the project's existing check, type-check, or build command.
 
-Fix build and TypeScript errors with minimal changes: $ARGUMENTS
+1. Reproduce the failure and separate the root cause from cascading errors.
+2. Read the relevant source and configuration before editing.
+3. Apply the smallest correct fix while preserving intended behavior.
+4. Do not suppress errors, weaken checks, refactor unrelated code, or add speculative dependencies.
+5. Rerun the original failing command, followed by any directly relevant broader check.
 
-## Your Task
-
-1. **Run type check**: `bun run check` (if available, preferred) or `npx tsc --noEmit`
-2. **Collect all errors**
-3. **Fix errors one by one** with minimal changes
-4. **Verify each fix** doesn't introduce new errors
-5. **Run final check** to confirm all errors resolved
-
-## Approach
-
-### DO:
-- PASS: Fix type errors with correct types
-- PASS: Add missing imports
-- PASS: Fix syntax errors
-- PASS: Make minimal changes
-- PASS: Preserve existing behavior
-- PASS: Run `bun run check` or `tsc --noEmit` after each change
-
-### DON'T:
-- FAIL: Refactor code
-- FAIL: Add new features
-- FAIL: Change architecture
-- FAIL: Use `any` type (unless absolutely necessary)
-- FAIL: Add `@ts-ignore` comments
-- FAIL: Change business logic
-
-## Common Error Fixes
-
-| Error | Fix |
-|-------|-----|
-| Type 'X' is not assignable to type 'Y' | Add correct type annotation |
-| Property 'X' does not exist | Add property to interface or fix property name |
-| Cannot find module 'X' | Install package or fix import path |
-| Argument of type 'X' is not assignable | Cast or fix function signature |
-| Object is possibly 'undefined' | Add null check or optional chaining |
-
-## Verification Steps
-
-After fixes:
-1. `bun run check` or `npx tsc --noEmit` - should show 0 errors
-2. `bun run build` - should succeed
-
----
-
-**IMPORTANT**: Focus on fixing errors only. No refactoring, no improvements, no architectural changes. Get the build green with minimal diff.
+Report the root cause, the focused change made, and the final verification result.

@@ -1,124 +1,58 @@
-# Nomeon Agent Instructions
+# Nomeon Global Instructions
 
-## Core Principles
+## Working Approach
 
-1. **Agent-First** — Delegate to specialized agents for domain tasks
-2. **Security-First** — Never compromise on security; validate all inputs
-3. **Immutability** — Always create new objects, never mutate existing ones
-4. **Plan Before Execute** — Plan complex features before writing code
-5. **YAGNI** — Always implement the simplest form that meets the requirements
+- Plan before implementing features, behavioral changes, or non-trivial refactors. Inspect the relevant code, resolve material ambiguity, define the intended scope, and identify how the result will be verified.
+- Keep plans proportional. A plan should establish shared understanding, not add ceremony. Tiny, obvious changes may be handled directly when the user chooses build mode.
+- Implement only the agreed requirements. Do not add speculative features, extension points, compatibility layers, or infrastructure for hypothetical future use.
+- Read the existing implementation before proposing new structure. Follow established project conventions unless they are the source of the problem.
+- Prefer the fewest concepts, layers, files, dependencies, and abstractions that make the current solution clear. Optimize for human readability and local reasoning, not the fewest lines.
+- Ask a concise question when a decision materially affects behavior or scope. Otherwise, make the smallest reasonable choice and proceed.
 
-## Available Agents
+## Engineering Standards
 
-| Agent                | Purpose                          | When to Use                       |
-| -------------------- | -------------------------------- | --------------------------------- |
-| planner              | Implementation planning          | Complex features, refactoring     |
-| architect            | System design and scalability    | Architectural decisions           |
-| code-reviewer        | Code quality and maintainability | After writing/modifying code      |
-| security-reviewer    | Vulnerability detection          | Before commits, sensitive code    |
-| build-error-resolver | Fix build/type errors            | When build fails                  |
-| refactor-cleaner     | Dead code cleanup                | Code maintenance                  |
-| database-reviewer    | PostgreSQL/Supabase specialist   | Schema design, query optimization |
-| skeptic              | Simplifying, YAGNI, and KISS     | Simplify code                     |
+- Use direct control flow, descriptive names, and cohesive functions. Extract code only when reuse or current readability clearly improves.
+- Keep related code together. Do not split files or functions to satisfy arbitrary size limits, and do not combine unrelated responsibilities merely to reduce file count.
+- Reuse existing project code when it is a natural fit. Small, obvious duplication is preferable to an awkward shared abstraction.
+- Avoid surprising mutation of inputs or shared state. Local mutation is acceptable when it is contained, intentional, and clearer or required by the framework.
+- Validate untrusted data at system boundaries. Use the project's existing validation approach; add a schema library only when the current requirement justifies it.
+- Handle errors where the code can recover, translate them for a caller, or add useful context. Do not add catch-and-rethrow blocks or defensive branches without a concrete failure mode.
+- Preserve existing behavior and public APIs unless the request requires a change. Add backward compatibility only for known consumers or persisted data, not hypothetical ones.
+- Add dependencies only when they provide clear value for the current task. Prefer platform and framework capabilities already in use.
+- Comment non-obvious reasons, invariants, or constraints. Do not narrate straightforward code.
+
+## Security
+
+- Never hardcode, expose, log, or commit credentials, tokens, private keys, or other secrets.
+- Preserve authentication, authorization, tenant isolation, data integrity, and transaction boundaries when they are part of the affected behavior.
+- Parameterize database queries and safely handle untrusted HTML, paths, commands, URLs, and redirects at their trust boundaries.
+- Apply controls such as CSRF protection, rate limiting, security headers, encryption, and audit logging when the application architecture and threat model require them, not as universal boilerplate.
+- If a real secret is exposed or a critical vulnerability is discovered, stop the affected work, report it clearly, and prioritize containment and remediation.
+
+## Workflow
+
+1. **Plan** - Understand the requirement, inspect relevant code, state assumptions, choose the smallest viable approach, and define targeted verification.
+2. **Build** - Implement the approved scope with focused changes. Do not rewrite unrelated code or disturb changes made by others.
+3. **Verify** - Review the resulting diff and run the narrowest meaningful tests, type checks, lint checks, formatting, or build commands supported by the project.
+4. **Review by risk** - Use specialist agents only when the task benefits from their domain expertise. Do not launch agents merely because they are available.
+
+Use specialists contextually:
 
 
-## Agent Orchestration
+- `builder` for focused implementation tasks. 
+- `architect` for a genuine design decision spanning meaningful boundaries or trade-offs.
+- `code-reviewer` for broad, risky, or explicitly requested reviews.
+- `security-reviewer` for authentication, authorization, sensitive data, exposed APIs, untrusted input, or other meaningful attack surfaces.
+- `database-reviewer` for schema, migration, transaction, RLS, or query-performance work.
+- `build-error-resolver` when a build or type check fails and needs a focused fix.
+- `refactor-cleaner` for deliberate dead-code or dependency cleanup.
+- `skeptic` when an implementation warrants a focused KISS/YAGNI simplification pass.
 
-Use agents proactively without user prompt:
+Always review your own changes, even when no specialist is used. Do not invent findings or broaden the task to justify additional work.
 
-- Complex feature requests → **planner**
-- Code just written/modified → **code-reviewer**
-- Architectural decision → **architect**
-- Security-sensitive code → **security-reviewer**
-- After new feature → **skeptic**
+## Repository Safety
 
-Use parallel execution for independent operations — launch multiple agents simultaneously using subagents.
-
-## Security Guidelines
-
-**Before ANY commit:**
-
-- No hardcoded secrets (API keys, passwords, tokens)
-- All user inputs validated
-- SQL injection prevention (parameterized queries)
-- XSS prevention (sanitized HTML)
-- CSRF protection enabled
-- Authentication/authorization verified
-- Rate limiting on all endpoints
-- Error messages don't leak sensitive data
-
-**Secret management:** NEVER hardcode secrets. Use environment variables or a secret manager. Validate required secrets at startup. Rotate any exposed secrets immediately.
-
-**If security issue found:** STOP → use security-reviewer agent → fix CRITICAL issues → rotate exposed secrets → review codebase for similar issues.
-
-## Coding Style
-
-**Immutability (CRITICAL):** Always create new objects, never mutate. Return new copies with changes applied.
-
-**KISS & YAGNI (CRITICAL)** Keep it simple; don't overengineer, overabstract, or overbuild if not explicitly required.
-
-**Human Readability:** Keep the code lean, but don't overengineer if it reduces readability.
-
-**File organization:** Many small files over few large ones. 200-400 lines typical, 800 max. Organize by feature/domain, not by type. High cohesion, low coupling.
-
-**Error handling:** Handle errors at every level. Provide user-friendly messages in UI code. Log detailed context server-side. Never silently swallow errors.
-
-**Input validation:** Validate all user input at system boundaries. Use schema-based validation. Fail fast with clear messages. Never trust external data.
-
-**Code quality checklist:**
-
-- Functions small (<50 lines), files focused (<800 lines)
-- No deep nesting (>4 levels)
-- Proper error handling, no hardcoded values
-- Readable, well-named identifiers
-
-## Development Workflow
-
-1. **Plan** — Use planner agent, identify dependencies and risks, break into phases.
-2. **Build** — Use build agent, implement, refactor.
-3. **Review** — Use code-reviewer agent immediately, address CRITICAL/HIGH issues.
-4. **Capture knowledge in the right place**
-   - Personal debugging notes, preferences, and temporary context → auto memory.
-   - Team/project knowledge (architecture decisions, API changes, runbooks) → the project's existing docs structure.
-   - If the current task already produces the relevant docs or code comments, do not duplicate the same information elsewhere.
-   - If there is no obvious project doc location, ask before creating a new top-level file.
-5. **Simplify** - Use skeptic subagent to remain lean.
-
-## Workflow Surface Policy
-
-- `skills/` is the canonical workflow surface.
-- New workflow contributions should land in `skills/` first.
-- `commands/` is a legacy slash-entry compatibility surface and should only be added or updated when a shim is still required for migration or cross-harness parity.
-
-## Architecture Patterns
-
-**API response format:** Consistent envelope with success indicator, data payload, error message, and pagination metadata.
-
-**Repository pattern:** Encapsulate data access behind standard interface (findAll, findById, create, update, delete). Business logic depends on abstract interface, not storage mechanism.
-
-**Skeleton projects:** Search for battle-tested templates, evaluate with parallel agents (security, extensibility, relevance), clone best match, iterate within proven structure.
-
-## Performance
-
-**Context management:** Avoid last 20% of context window for large refactoring and multi-file features. Lower-sensitivity tasks (single edits, docs, simple fixes) tolerate higher utilization.
-
-**Build troubleshooting:** Use build-error-resolver agent → analyze errors → fix incrementally → verify after each fix.
-
-## Project Structure
-
-```
-agents/          — specialized subagents
-skills/          — workflow skills and domain knowledge
-commands/        — slash commands
-rules/           — Always-follow guidelines (common + per-language)
-scripts/         — Cross-platform Node.js utilities
-```
-
-`commands/` remains in the repo for compatibility, but the long-term direction is skills-first.
-
-## Success Metrics
-
-- No security vulnerabilities
-- Code is readable and maintainable
-- Performance is acceptable
-- User requirements are met
+- Do not stage, commit, push, amend, or create pull requests unless explicitly requested.
+- Never use destructive Git or database commands without explicit approval.
+- Do not revert or overwrite unrelated worktree changes.
+- Put durable project knowledge in the project's existing documentation structure only when the task requires it. Do not create process documents, logs, or top-level files by default.

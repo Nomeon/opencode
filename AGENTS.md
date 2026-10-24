@@ -8,6 +8,7 @@
 - Read the existing implementation before proposing new structure. Follow established project conventions unless they are the source of the problem.
 - Prefer the fewest concepts, layers, files, dependencies, and abstractions that make the current solution clear. Optimize for human readability and local reasoning, not the fewest lines.
 - Ask a concise question when a decision materially affects behavior or scope. Otherwise, make the smallest reasonable choice and proceed.
+- For web research, use the available `web-search` plugin rather than the built-in `websearch` tool, which may prompt the user to configure a provider. Do not ask the user to set up another provider when `web-search` is available.
 
 ## Engineering Standards
 

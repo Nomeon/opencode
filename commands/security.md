@@ -1,7 +1,7 @@
 ---
 description: Review a meaningful attack surface using its actual threat model
 agent: security-reviewer
-subtask: true
+subagent: true
 ---
 
 Review the security of `$ARGUMENTS`. If no scope is provided, use the current Git changes and their relevant trust boundaries.

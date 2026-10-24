@@ -1,5 +1,3 @@
-node_modules
-package.json
-package-lock.json
-bun.lock
-.agents
+/node_modules/
+/service.json
+/opencode-notifier-state.json

@@ -1,7 +1,7 @@
 ---
 description: Remove confirmed dead code, unused dependencies, and harmful duplication
 agent: refactor-cleaner
-subtask: true
+subagent: true
 ---
 
 Clean up `$ARGUMENTS`. If no scope is provided, use the current changes.

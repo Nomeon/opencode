@@ -1,7 +1,7 @@
 ---
 description: Review scoped changes for concrete defects and regressions
 agent: code-reviewer
-subtask: true
+subagent: true
 ---
 
 Review `$ARGUMENTS`. If no scope is provided, review the complete current Git diff, including staged and relevant untracked files.

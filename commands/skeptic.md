@@ -1,7 +1,7 @@
 ---
 description: Simplify the current implementation while preserving behavior
 agent: skeptic
-subtask: true
+subagent: true
 ---
 
 Review and simplify `$ARGUMENTS`. If no scope is provided, use the current changes.

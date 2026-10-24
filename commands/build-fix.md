@@ -1,7 +1,7 @@
 ---
 description: Fix build or type errors with the smallest correct change
 agent: build-error-resolver
-subtask: true
+subagent: true
 ---
 
 Reproduce and fix `$ARGUMENTS`. If no error is supplied, run the project's existing check, type-check, or build command.

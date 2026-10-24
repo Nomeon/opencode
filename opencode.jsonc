@@ -1,136 +1,129 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "autoupdate": "notify",
+  "update": "notify",
   "default_agent": "plan",
-  "permission": {
-    "mcp_*": "ask"
-  },
-  "agent": {
+  "plugins": ["@mohak34/opencode-notifier@1.1.0"],
+  "skills": ["~/.config/opencode/.agents/skills"],
+  "permissions": [
+    { "action": "shadcn_*", "resource": "*", "effect": "ask" },
+    { "action": "better_auth_*", "resource": "*", "effect": "ask" },
+    { "action": "prisma_*", "resource": "*", "effect": "ask" },
+    { "action": "railway_*", "resource": "*", "effect": "ask" },
+    { "action": "opencode_list_mcp_resources", "resource": "*", "effect": "ask" },
+    { "action": "opencode_read_mcp_resource", "resource": "*", "effect": "ask" }
+  ],
+  "agents": {
+    "build": {
+      "model": "openai/gpt-6-luna-fast#high"
+    },
     "builder": {
       "description": "Implements planned development work with focused, minimal changes.",
       "mode": "subagent",
-      "model": "openai/gpt-5.6-luna",
-      "options": {
-        "reasoningEffort": "high"
-      },
-      "prompt": "{file:prompts/builder.txt}",
-      "permission": {
-        "edit": "allow",
-        "bash": "allow",
-        "read": "allow"
-      }
+      "model": "openai/gpt-6-luna-fast#high",
+      "system": "{file:prompts/builder.txt}",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" }
+      ]
     },
     "architect": {
       "description": "Reviews genuine architecture decisions and recommends the smallest design that satisfies current requirements.",
       "mode": "subagent",
-      "model": "openai/gpt-5.6-sol",
-      "prompt": "{file:prompts/architect.txt}",
-      "permission": {
-        "edit": "deny",
-        "write": "deny",
-        "bash": "allow",
-        "read": "allow"
-      }
+      "model": "openai/gpt-6.1-sol-fast#high",
+      "system": "{file:prompts/architect.txt}",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" }
+      ]
     },
     "code-reviewer": {
       "description": "Finding-driven review for broad, risky, or explicitly requested changes.",
       "mode": "subagent",
-      "model": "openai/gpt-5.6-sol",
-      "prompt": "{file:prompts/code-reviewer.txt}",
-      "permission": {
-        "edit": "deny",
-        "write": "deny",
-        "bash": "allow",
-        "read": "allow"
-      }
+      "model": "openai/gpt-6.1-sol-fast#high",
+      "system": "{file:prompts/code-reviewer.txt}",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" }
+      ]
     },
     "security-reviewer": {
       "description": "Threat-model-driven security review and remediation for meaningful attack surfaces.",
       "mode": "subagent",
-      "model": "openai/gpt-5.6-sol",
-      "prompt": "{file:prompts/security-reviewer.txt}",
-      "permission": {
-        "edit": "allow",
-        "write": "allow",
-        "bash": "allow",
-        "read": "allow",
-        "webfetch": "allow"
-      }
+      "model": "openai/gpt-6.1-sol-fast#high",
+      "system": "{file:prompts/security-reviewer.txt}",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" },
+        { "action": "webfetch", "resource": "*", "effect": "allow" }
+      ]
     },
     "build-error-resolver": {
       "description": "Build and TypeScript error resolution specialist. Use when build fails or type errors occur. Fixes build/type errors only with minimal diffs.",
       "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "prompt": "{file:prompts/build-error-resolver.txt}",
-      "permission": {
-        "edit": "allow",
-        "write": "allow",
-        "bash": "allow",
-        "read": "allow"
-      }
+      "model": "openai/gpt-6.1-sol-fast#medium",
+      "system": "{file:prompts/build-error-resolver.txt}",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" }
+      ]
     },
     "refactor-cleaner": {
       "description": "Focused dead-code, unused dependency, and duplicate cleanup with behavior preservation.",
       "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "prompt": "{file:prompts/refactor-cleaner.txt}",
-      "permission": {
-        "edit": "allow",
-        "write": "allow",
-        "bash": "allow",
-        "read": "allow"
-      }
+      "model": "openai/gpt-6.1-sol-fast#medium",
+      "system": "{file:prompts/refactor-cleaner.txt}",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" }
+      ]
     },
     "database-reviewer": {
       "description": "Evidence-based PostgreSQL and Prisma review for schema, migration, integrity, security, and query concerns.",
       "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "prompt": "{file:prompts/database-reviewer.txt}",
-      "permission": {
-        "edit": "allow",
-        "write": "allow",
-        "bash": "allow",
-        "read": "allow"
-      }
+      "model": "openai/gpt-6.1-sol-fast#medium",
+      "system": "{file:prompts/database-reviewer.txt}",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" }
+      ]
     },
     "skeptic": {
       "description": "Simplify implementations using KISS and YAGNI. Eliminate unnecessary abstractions and premature optimization. Prefer existing code and the smallest reasonable solution.",
       "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "prompt": "{file:prompts/skeptic.txt}",
-      "permission": {
-        "edit": "allow",
-        "write": "allow",
-        "bash": "allow",
-        "read": "allow"
-      }
+      "model": "openai/gpt-6.1-sol-fast#medium",
+      "system": "{file:prompts/skeptic.txt}",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" }
+      ]
     }
   },
   "mcp": {
-    "shadcn": {
-      "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "shadcn@latest",
-        "mcp"
-      ],
-      "enabled": true
-    },
-    "better-auth": {
-      "type": "remote",
-      "url": "https://mcp.better-auth.com/mcp",
-      "enabled": true
-    },
-    "prisma": {
-      "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "prisma",
-        "mcp"
-      ],
-      "enabled": true
-    },
-  },
+    "servers": {
+      "shadcn": {
+        "type": "local",
+        "command": ["bun", "x", "shadcn@4.22.1", "mcp"]
+      },
+      "better-auth": {
+        "type": "remote",
+        "url": "https://mcp.better-auth.com/mcp"
+      },
+      "prisma": {
+        "type": "local",
+        "command": ["bun", "x", "prisma@6.19.0", "mcp"]
+      },
+      "railway": {
+        "type": "local",
+        "command": ["railway", "mcp"]
+      }
+    }
+  }
 }
